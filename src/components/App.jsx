@@ -1,44 +1,51 @@
-// var App = () => (
-
-// );
-
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       video: exampleVideoData[0],
-      playerDisplay: false
+      videos: [exampleVideoData[0], exampleVideoData[1]],
     };
   }
 
-  // event listeners
-  onEntryClick(e) {
-    // this.setState({
-    //   playerDisplay: true
-    // });
-    console.log("CLICKED!", e.target);
-    // this.video = e.getVideo();
-    // this.render(clickedVid);
+  componentWillMount() {
+    var options = {
+      key: YOUTUBE_API_KEY,
+      max: 5,
+      query: 'kittens'
+    };
+    window.searchYouTube(options, (data) => { this.setState({'videos': data, 'video': data[0]}); });    
   }
 
-  // props.searchYouTube ==== is a function; if invoked, will return data.
+  onEntryClick(video) {
+    this.setState({'video': video});
+  }
 
-  render(video) {
+  onSearchSubmit(queryString) {
+    var options = {
+      query: queryString,
+      max: 5, 
+      key: YOUTUBE_API_KEY
+    };
 
+    var onSuccess = function (data) {
+      this.setState({'videos': data, 'video': data[0]});
+    };
+
+    window.searchYouTube(options, onSuccess.bind(this));
+  }
+
+  render() {
     return (  
       <div>
-        <Nav />
+        <Nav searchSubmit={_.debounce(this.onSearchSubmit.bind(this), 500) }/>
         <div className="col-md-7">
-          <VideoPlayer video = {video || this.state.video}/>
+          <VideoPlayer video = {this.state.video}/>
         </div>
         <div className="col-md-5">
-          <VideoList cli={this.onEntryClick.bind(this)} videos={[this.state.video, this.state.video]} />
+          <VideoList click={this.onEntryClick.bind(this)} videos={ this.state.videos } />
         </div>
       </div>
     );
   }
 }
-// In the ES6 spec, files are "modules" and do not share a top-level scope
-// `var` declarations will only exist globally where explicitly defined
-console.log("check 123");

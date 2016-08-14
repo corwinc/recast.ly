@@ -1,7 +1,7 @@
 var VideoList = (props) => (
   <div className="video-list media">
     {props.videos.map(video => 
-        <VideoListEntry video={video} cli={props.cli}/> 
+        <VideoListEntry video={video} click={props.click}/> 
     )}
   </div>
 );
